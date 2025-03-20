@@ -10,6 +10,10 @@ void SetCursorPosition(int x, int y) {
     SetConsoleCursorPosition(hConsole, pos);
 }
 
+void ClearScreen() {
+    system("cls"); 
+}
+
 int main() {
     WSADATA wsa;
     WSAStartup(MAKEWORD(2, 2), &wsa);
@@ -27,24 +31,26 @@ int main() {
     SOCKET client = accept(server, 0, 0);
     cout << "Client connected." << endl;
 
-    int coords[2];
+    char coords[10];
     int oldX = -1, oldY = -1;
 
     while (true) {
-        int bytes = recv(client, (char*)coords, sizeof(coords), 0);
+        int bytes = recv(client, coords, sizeof(coords), 0);
         if (bytes <= 0) break;
+
+        int x, y;
+        sscanf_s(coords, "%d %d", &x, &y);
 
         if (oldX != -1 && oldY != -1) {
             SetCursorPosition(oldX, oldY);
             cout << " ";
         }
 
-
-        SetCursorPosition(coords[0], coords[1]);
+        SetCursorPosition(x, y);
         cout << ":)";
 
-        oldX = coords[0];
-        oldY = coords[1];
+        oldX = x;
+        oldY = y;
     }
 
     closesocket(client);
